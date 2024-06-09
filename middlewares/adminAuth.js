@@ -1,7 +1,7 @@
 
 
 const isToken = (req,res,next)=>{                              
-    let token = req.cookies.token
+    let token = req.cookies.admintoken
     if(token){
         next()
     }else{
@@ -12,7 +12,7 @@ const isToken = (req,res,next)=>{
 
 
 const isNotToken=(req,res,next)=>{
-    const token = req.cookies.token;
+    const token = req.cookies.admintoken;
     if(token){
         res.redirect('/admin')
     }else{

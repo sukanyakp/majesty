@@ -5,6 +5,7 @@ const nocache = require('nocache');
 const session = require('express-session');
 const userRouter = require('./routes/userRouter.js');
 const adminRouter = require("./routes/adminRouter.js")
+const productRouter = require("./routes/productRouter.js")
 const connection = require('./connection/connection.js');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -30,14 +31,25 @@ app.use(session({
 app.use(cookieParser())
 
 app.use("/",userRouter);
-
 app.use("/admin",adminRouter);
+app.use("/products",productRouter);
 
-// Error-handling middleware
+// // Error handling middleware
+// app.use((req, res, next) => {
+//     const err = new Error('Not Found');
+//     err.status = 404;
+//     next(err);
+// });
+
 app.use((err, req, res, next) => {
-    console.error(err.stack); // Log the error stack trace
-    res.status(500).render('error', { error: err.message }); // Render an error page with the error message
+    res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: err
+    });
 });
+
+
 app.listen(3001,()=>{
     console.log("server is running..");
 })

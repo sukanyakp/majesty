@@ -49,19 +49,13 @@ const sendOTP = async (email, otp) => {
     }
 };
 
-const tempOTPStore = {}; // In-memory store for OTPs, use Redis or database in production
-
-
 
 // register
-
 const register = async (req, res) => {
     console.log(req.body)
     const { name, email, phone, password } = req.body
 
-
     // check if email already exists
-    // let emailAlReadyExist = false
     let user = await User.findOne({ email: email });
     registerdEmail = email;
 
@@ -70,17 +64,25 @@ const register = async (req, res) => {
         return res.render('user/register', { errE: "entered Email is already exist" })
     }
 
+     // Check if phone number already exists
+     let checkPhone = await User.findOne({ phone: phone });
+     if (checkPhone) {
+         console.log("phone already exists");
+         return res.render('user/register', { errP: "Entered phone number is already exist" });
+     }
+
         let hashedPasword = await bcrypt.hash(password, 10)
 
         let date = new Date();
         const options = { day: 'numeric', month: 'short', year: 'numeric' };
-         let localdate = date.toLocaleDateString('en-GB', options);
+        let localdate = date.toLocaleDateString('en-GB', options);
 
         const newUser = await User.create({
             name: name,
             email: email,
             phone: phone,
             password: hashedPasword,
+            jointDate:localdate
 
         })
         console.log(newUser)

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Product Page</title>
+    <link rel="stylesheet" href="/admin/assets/css/styles.min.css" />
+    <link rel="stylesheet" href="/admin/assets/css/user.css" />
+    <link rel="stylesheet" href="/admin/assets/css/products.css">
+    <script src="/js/scripts.js" defer></script>
+
+</head>
+<body>
+  <!-- Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <!-- Sidebar Start -->
+    <aside class="left-sidebar">
+      <!-- Sidebar scroll-->
+      <div>
+        <div class="brand-logo d-flex align-items-center justify-content-between hello">
+        
+            <img src="/admin/assets/images/logos/dark-logo.svg" width="180" alt="" />
+          </a>
+          <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+            <i class="ti ti-x fs-8"></i>
+          </div>
+        </div>
+        <!-- Sidebar navigation-->
+        <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+          <ul id="sidebarnav">
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/admin" aria-expanded="false">
+                <span></span>
+                <span class="hide-menu">Dashboard</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/products/category" aria-expanded="false">
+                <span></span>
+                <span class="hide-menu">Category</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/products" aria-expanded="false">
+                <span></span>
+                <span class="hide-menu">Products</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/admin/users" aria-expanded="false">
+                <span></span>
+                <span class="hide-menu">Users</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/admin/orders" aria-expanded="false">
+                <span></span>
+                <span class="hide-menu">Orders</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/admin/coupons" aria-expanded="false">
+                <span></span>
+                <span class="hide-menu">Coupon</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="/admin/logout" aria-expanded="false">
+                <span></span>
+                <span class="hide-menu">Logout</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <!-- End Sidebar navigation -->
+      </div>
+      <!-- End Sidebar scroll-->
+    </aside>
+    <!-- Sidebar End -->
+    <div class="container">
+        <h1>Admin Product Page</h1>
+
+        <button id="addProductBtn">Add New Product</button>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(function(product) { %>
+                <tr>
+                    <td><%= product.id %></td>
+                    <td><%= product.name %></td>
+                    <td><%= product.price %></td>
+                    <td><%= product.category %></td>
+                    <td>
+                        <button class="editProductBtn" data-id="<%= product.id %>">Edit</button>
+                        <button class="deleteProductBtn" data-id="<%= product.id %>">Delete</button>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+
+        <div id="productModal" class="modal">
+            <div class="modal-content">
+                <span class="closeBtn">&times;</span>
+                <h2 id="modalTitle">Add New Product</h2>
+                <form id="productForm">
+                    <input type="hidden" id="productId" name="productId">
+                    <label for="productName">Name:</label>
+                    <input type="text" id="productName" name="productName" required>
+                    <label for="productPrice">Price:</label>
+                    <input type="number" id="productPrice" name="productPrice" required>
+                    <label for="productCategory">Category:</label>
+                    <input type="text" id="productCategory" name="productCategory" required>
+                    <button type="submit">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const addProductBtn = document.getElementById('addProductBtn');
+            const productModal = document.getElementById('productModal');
+            const closeBtn = document.querySelector('.closeBtn');
+            const productForm = document.getElementById('productForm');
+            const modalTitle = document.getElementById('modalTitle');
+            const productId = document.getElementById('productId');
+            const productName = document.getElementById('productName');
+            const productPrice = document.getElementById('productPrice');
+            const productCategory = document.getElementById('productCategory');
+
+            addProductBtn.addEventListener('click', () => {
+                modalTitle.textContent = 'Add New Product';
+                productForm.reset();
+                productId.value = '';
+                productModal.style.display = 'block';
+            });
+
+            closeBtn.addEventListener('click', () => {
+                productModal.style.display = 'none';
+            });
+
+            window.addEventListener('click', (e) => {
+                if (e.target == productModal) {
+                    productModal.style.display = 'none';
+                }
+            });
+
+            document.querySelectorAll('.editProductBtn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    // Fetch product details using the id and populate the form (this part requires backend implementation)
+                    modalTitle.textContent = 'Edit Product';
+                    productModal.style.display = 'block';
+                });
+            });
+
+            document.querySelectorAll('.deleteProductBtn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    // Implement product deletion logic here (this part requires backend implementation)
+                    alert('Product deleted: ' + id);
+                });
+            });
+
+            productForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+
+
+
+                // Implement form submission logic here (this part requires backend implementation)
+                productModal.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

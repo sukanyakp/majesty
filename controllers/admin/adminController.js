@@ -34,6 +34,20 @@ const getUser = async (req,res)=>{
 }
 
 
+
+//get Blocked users
+
+const getBlockedUser = async (req,res)=>{
+    let user = await User.find({isListed : true} )
+    res.render('admin/blockedusers',{users:user})
+}
+
+
+
+
+
+
+
 //validate admin login 
 
 const validateLogin = async (req,res)=>{
@@ -76,7 +90,7 @@ const validateLogin = async (req,res)=>{
 
 
 // //  function to generate OTP
-// const generateOTP = ()=>{
+// const createOTP = ()=>{
 //     return(crypto.randomBytes(3).readUIntBE(0,3) % 1000000).toString().padStart(6,"0")
 // }
 
@@ -84,6 +98,81 @@ const validateLogin = async (req,res)=>{
 // const generateToken = (payload)=>{
 //     return jwt.sign(payload,process.env.SECRET_KEY)
 // }
+
+
+
+// Function to send OTP via email
+const sendOTP = async (email, otp) => {
+    try {
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Your OTP for Registration',
+            text: `Your OTP is ${otp}`
+        };
+        console.log("otp", otp);
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log("Email sent successfully:", info.response);
+    } catch (error) {
+        console.error("Error occurred:", error);
+        throw new Error("Failed to send email");
+    }
+};
+
+
+
+
+
+
+
+
+//block user
+
+const blockuser = async(req,res)=>{
+    let userId = req.query.userId;
+console.log(`id is ${userId}`)
+    let user = await User.updateOne(
+        {_id:userId},
+        {
+            $set:{
+                isListed:true
+            }
+         }
+    )
+    if(user){
+        res.status(200).send("user blocked successfully")
+    }
+}
+
+// unblock user
+
+const unBlockUser = async (req,res)=>{
+    let userId = req.query.userId;
+    console.log(`id is ${userId}`);
+    let user = await User.updateOne(
+        {_id:userId},
+        {
+            $set:{
+                isListed:false
+            }
+        }
+    )
+    if(user){
+        res.status(200).send("user unblocked  successfully")
+    }
+}
+
+
+
 
 
 
@@ -95,8 +184,15 @@ module.exports ={
     getAdminOtp,
     getAdminOtpEmail,
     validateLogin,
-    getUser
-    // generateOTP,
+    getUser,
+    // createOTP,
     // generateToken
+    getBlockedUser,
+    blockuser,
+    unBlockUser,
+  
+  
+
+    
 
 }

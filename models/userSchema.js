@@ -37,10 +37,11 @@ const userSchema = new mongoose.Schema({
         default:false
     },
     jointDate:{
-        type:String,
-        required:true,
-        default:false
+        type: Date,
+        required:true
+       
     }
+
 })
 
 module.exports = mongoose.model("user",userSchema)  
